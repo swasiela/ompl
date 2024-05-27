@@ -44,6 +44,7 @@
 #include "ompl/base/GenericParam.h"
 #include "ompl/util/Console.h"
 #include "ompl/util/ClassForward.h"
+#include "ompl/util/Exception.h"
 #include <boost/concept_check.hpp>
 #include <iostream>
 #include <vector>
@@ -331,6 +332,75 @@ namespace ompl
                 The memory location of @e state is not required to be different from the memory of either
                 @e from or @e to. */
             virtual void interpolate(const State *from, const State *to, double t, State *state) const = 0;
+
+            /** \brief Computes the local trajectory that connects @e from state to @e to state using a time step @e dt. */
+            virtual void interpolate(const State *from, const State *to, const double dt, std::vector<State*>& states) const
+            {
+                (void)from;
+                (void)to;
+                (void)dt;
+                (void)states;
+                throw ompl::Exception("interpolate", "not implemented");
+            }
+
+            /** \brief Computes the local trajectory that connects @e from state to @e to state using a time step @e dt. It also converts the trajectory in tensor format. */
+            virtual void interpolateLearning(const State *from, const State *to, const double dt, std::vector<State*>& states, std::vector<std::vector<float>> &vector_to_tensor) const
+            {
+                (void)from;
+                (void)to;
+                (void)dt;
+                (void)states;
+                (void)vector_to_tensor;
+                throw ompl::Exception("interpolateLearning", "not implemented");
+            }
+
+            /** \brief Generates the robot states to be used for the collision test from the desired state by means of a simple projection. 
+             * @param des_states The desired trajectory to track.
+             * @param collision_states The robot states used for collision checking. These states may differ from the desired one (e.g. underactuated system).
+            */
+            virtual void projectStates(const std::vector<State*> &des_states, std::vector<std::vector<double>> &collision_states) const
+            {
+                (void)des_states;
+                (void)collision_states;
+                throw ompl::Exception("projectStates", "not implemented");
+            }
+
+            /**
+             * Simulate the nominal tracking of the desired trajetcory.
+             *
+             * @param des_states The desired trajectory to track.
+             * @param dt The time step.
+             * @param collision_states The resulting robot states in S03 only used for collisions checking. These states differ from the desired one in the case of an underactuated system.
+             * @return If the simulation was successful
+            */
+            virtual bool simulateStates(const std::vector<ompl::base::State*> &des_states, const double dt, std::vector<std::vector<double>> &collision_states) const
+            {
+                (void)des_states;
+                (void)dt;
+                (void)collision_states;
+                throw ompl::Exception("simulateStates", "not implemented");
+            }
+
+            /**
+             * Simulate the nominal tracking of the desired trajetcory and compute the uncertainty tubes.
+             *
+             * @param des_states The desired trajectory to track.
+             * @param dt The time step.
+             * @param collision_states The resulting robot states in S03 only used for collisions checking. These states differ from the desired one in the case of an underactuated system.
+             * @param control_inputs The resulting simulated control inputs. 
+             * @param radii The resulting simulated tubes radii. 
+             * @return If the simulation was successful
+            */
+            virtual bool simulateStatesAndTubes(const std::vector<ompl::base::State*> &des_states, double dt, std::vector<std::vector<double>> &collision_states,
+                                                std::vector<std::vector<double>> &control_inputs, std::vector<std::vector<double>> &radii) const
+            {
+                (void)des_states;
+                (void)dt;
+                (void)collision_states;
+                (void)control_inputs;
+                (void)radii;
+                throw ompl::Exception("simulateStatesAndTubes", "not implemented");
+            }
 
             /** \brief Allocate an instance of the default uniform state sampler for this space */
             virtual StateSamplerPtr allocDefaultStateSampler() const = 0;

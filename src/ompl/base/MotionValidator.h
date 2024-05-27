@@ -37,6 +37,10 @@
 #ifndef OMPL_BASE_MOTION_VALIDATOR_
 #define OMPL_BASE_MOTION_VALIDATOR_
 
+#include "torch/torch.h"
+
+#include "ompl/util/Exception.h"
+
 #include "ompl/base/State.h"
 #include "ompl/util/ClassForward.h"
 #include <utility>
@@ -97,6 +101,122 @@ namespace ompl
 
                 \note This function updates the number of valid and invalid segments. */
             virtual bool checkMotion(const State *s1, const State *s2, std::pair<State *, double> &lastValid) const = 0;
+
+            /**
+             * Interpolate and check the motion between s1 and s2 in the 'traditional' way.
+             *
+             * @param s1 The first state of the desired motion
+             * @param s2 The final state of the desired motion
+             * @param states The list of desired states to filled (i.e. the desired trajectory that will be given to the controller).
+             * @return The validity of the motion
+            */
+            virtual bool checkMotion(const State *s1, const State *s2, std::vector<State*>& states) const
+            {
+                (void)s1;
+                (void)s2;
+                (void)states;
+                throw ompl::Exception("checkMotion", "not implemented");
+            }
+            
+            /**
+             * Interpolate and check the motion between s1 and s2 using uncertainty tubes predicted by the GRU neural network.
+             *
+             * @param s1 The first state of the desired motion
+             * @param s2 The final state of the desired motion
+             * @param states The initial robot state used as initial condition to simulate the robot dynamic
+             * @param traj_tensor The initial hidden state used as initial condition for the prediction
+             * @return The validity of the motion.
+            */
+            virtual bool checkMotionLearning(const State *s1, const State *s2, std::vector<ompl::base::State*>& states, torch::Tensor &traj_tensor) const
+            {
+                (void)s1;
+                (void)s2;
+                (void)states;
+                (void)traj_tensor;
+                throw ompl::Exception("checkMotionLearning", "not implemented");
+            }
+
+            /**
+             * Interpolate and check the motion between s1 and s2 using uncertainty tubes computed by solving ODEs.
+             *
+             * @param s1 The first state of the desired motion
+             * @param s2 The final state of the desired motion
+             * @param states The list of desired states to filled (i.e. the desired trajectory that will be given to the controller).
+             * @return The validity of the motion
+            */
+            virtual bool checkMotionODE(const State *s1, const State *s2, std::vector<ompl::base::State*>& states) const
+            {
+                (void)s1;
+                (void)s2;
+                (void)states;
+                throw ompl::Exception("checkMotionODE", "not implemented");
+            }
+
+            /**
+             * Propagate each RandUp particles between s1 and s2 using the Lee controller.
+             *
+             * @param s1 The first state of the desired motion
+             * @param s2 The final state of the desired motion
+             * @param init_dynamic_states The initial robot state of each particle.
+             * @param rand_up_params The uncertain model parameter values of each particle.
+             * @param propagated_states The final robot state of each particle after propagation to be reused as futur initial state.
+             * @return The validity of the motion
+            */
+            virtual bool checkMotionRandUp(const State *s1, const State *s2, const std::vector<std::vector<double>> &init_dynamic_states, 
+                                        const std::vector<std::vector<double>> &rand_up_params, std::vector<std::vector<double>> &propagated_states) const
+            {
+                (void)s1;
+                (void)s2;
+                (void)init_dynamic_states;
+                (void)rand_up_params;
+                (void)propagated_states;
+                throw ompl::Exception("checkMotionRandUp", "not implemented");
+            }
+
+            //############################################################################################################
+            // Re-check a precomputed motion
+
+            /**
+             * Re-check a precomputed motion in the 'traditional' way
+             *
+             * @param states The precomputed trajectory
+             * @return The validity of the motion
+            */
+            virtual bool reCheckMotion(const std::vector<State*>& states) const
+            {
+                (void)states;
+                throw ompl::Exception("reCheckMotion", "not implemented");
+            }
+
+            /**
+             * Re-check a precomputed motion using uncertainty tubes prediction
+             *
+             * @param states The precomputed trajectory
+             * @param traj_tensor The precomputed trajectory in torch::Tensor format
+             * @param init_nominal_state The initial robot state used as initial condition to solve the dynamic ODEs
+             * @param new_final_nom_state The updated final nominal state values (i.e qF) to be reused as futur initial conditions
+             * @param new_final_hidden_state The updated final hidden state values (i.e hF) to be reused as futur initial conditions
+             * @return The validity of the motion
+            */
+            virtual bool reCheckMotionLearning(const std::vector<ompl::base::State*>& states, const torch::Tensor& traj_tensor) const
+            
+            {
+                (void)states;
+                (void)traj_tensor;
+                throw ompl::Exception("reCheckMotionLearning", "not implemented");
+            }
+
+            /**
+             * Re-check a precomputed motion using ODE tubes computation
+             *
+             * @param states The precomputed trajectory
+             * @return The validity of the motion
+            */
+            virtual bool reCheckMotionODE(const std::vector<ompl::base::State*>& states) const
+            {
+                (void)states;
+                throw ompl::Exception("reCheckMotionODE", "not implemented");
+            }
 
             /** \brief Get the number of segments that tested as valid */
             unsigned int getValidMotionCount() const

@@ -49,6 +49,7 @@ target_link_libraries(ompl
         "$<$<BOOL:${Threads_FOUND}>:Threads::Threads>"
         "$<$<BOOL:${OMPL_HAVE_FLANN}>:flann::flann>"
         "$<$<BOOL:${OMPL_EXTENSION_TRIANGLE}>:Triangle::Triangle>"
+        "${TORCH_LIBRARIES}"
     PRIVATE
         "$<$<BOOL:${OMPL_HAVE_SPOT}>:Spot::Spot>")
 

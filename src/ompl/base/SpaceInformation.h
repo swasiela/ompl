@@ -366,6 +366,98 @@ namespace ompl
             /** \brief Check if a sequence of states is valid using subdivision. */
             bool checkMotion(const std::vector<State *> &states, unsigned int count) const;
 
+            /**
+             * Interpolate and check the motion between s1 and s2 in the 'traditional' way.
+             *
+             * @param s1 The first state of the desired motion
+             * @param s2 The final state of the desired motion
+             * @param states The list of desired states to filled (i.e. the desired trajectory that will be given to the controller).
+             * @return The validity of the motion
+            */
+            bool checkMotion(const State *s1, const State *s2, std::vector<State*>& states) const
+            {
+                return motionValidator_->checkMotion(s1, s2, states);
+            }
+            
+            /**
+             * Interpolate and check the motion between s1 and s2 using uncertainty tubes predicted by the GRU neural network.
+             *
+             * @param s1 The first state of the desired motion
+             * @param s2 The final state of the desired motion
+             * @param states The initial robot state used as initial condition to simulate the robot dynamic
+             * @param traj_tensor The initial hidden state used as initial condition for the prediction
+             * @return The validity of the motion.
+            */
+            bool checkMotionLearning(const State *s1, const State *s2, std::vector<ompl::base::State*>& states, torch::Tensor &traj_tensor) const
+            {
+                return motionValidator_->checkMotionLearning(s1, s2, states, traj_tensor);
+            }
+
+            /**
+             * Interpolate and check the motion between s1 and s2 using uncertainty tubes computed by solving ODEs.
+             *
+             * @param s1 The first state of the desired motion
+             * @param s2 The final state of the desired motion
+             * @param states The list of desired states to filled (i.e. the desired trajectory that will be given to the controller).
+             * @return The validity of the motion
+            */
+            bool checkMotionODE(const State *s1, const State *s2, std::vector<ompl::base::State*>& states) const
+            {
+                return motionValidator_->checkMotionODE(s1, s2, states);
+            }
+
+            /**
+             * Propagate each RandUp particles between s1 and s2 using the Lee controller.
+             *
+             * @param s1 The first state of the desired motion
+             * @param s2 The final state of the desired motion
+             * @param init_dynamic_states The initial robot state of each particle.
+             * @param rand_up_params The uncertain model parameter values of each particle.
+             * @param propagated_states The final robot state of each particle after propagation to be reused as futur initial state.
+             * @return The validity of the motion
+            */
+            bool checkMotionRandUp(const State *s1, const State *s2, const std::vector<std::vector<double>> &init_dynamic_states, 
+                                            const std::vector<std::vector<double>> &rand_up_params, std::vector<std::vector<double>> &propagated_states) const
+            {
+                return motionValidator_->checkMotionRandUp(s1, s2 , init_dynamic_states, rand_up_params, propagated_states);
+            }
+
+            //############################################################################################################
+            // Re-check a precomputed motion
+
+            /**
+             * Re-check a precomputed motion in the 'traditional' way
+             *
+             * @param states The precomputed trajectory
+             * @return The validity of the motion
+            */
+            bool reCheckMotion(const std::vector<State*>& states) const
+            {
+                return motionValidator_->reCheckMotion(states);
+            }
+
+            /**
+             * Re-check a precomputed motion using uncertainty tubes prediction
+             *
+             * @param states The precomputed trajectory
+             * @return The validity of the motion
+            */
+            bool reCheckMotionLearning(const std::vector<ompl::base::State*>& states, const torch::Tensor& traj_tensor) const
+            {
+                return motionValidator_->reCheckMotionLearning(states, traj_tensor);
+            }
+
+            /**
+             * Re-check a precomputed motion using ODE tubes computation
+             *
+             * @param states The precomputed trajectory
+             * @return The validity of the motion
+            */
+            bool reCheckMotionODE(const std::vector<ompl::base::State*>& states) const
+            {
+                return motionValidator_->reCheckMotionODE(states);
+            }
+
             /** \brief Get \e count states that make up a motion between \e s1 and \e s2. Returns the number of states
                that were added to \e states. These states are not checked for validity.
                 If \e states.size() >= count or \e alloc is true, the returned value is equal to \e count (or \e count +

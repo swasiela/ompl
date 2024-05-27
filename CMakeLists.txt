@@ -31,6 +31,14 @@ set(OMPL_DEMO_INSTALL_DIR "${CMAKE_INSTALL_DATAROOTDIR}/ompl/demos"
 
 include_directories("${OMPL_INCLUDE_DIRS}")
 
+#############################################
+# Add libtorch #
+#############################################
+
+list(APPEND CMAKE_PREFIX_PATH "/home/swasiela/CAMP/libtorch")
+find_package(Torch REQUIRED)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+
 if(MSVC)
     add_definitions(-DBOOST_ALL_NO_LIB)
     add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
@@ -148,10 +156,6 @@ endif()
 find_program(R_EXEC R)
 
 add_subdirectory(src)
-add_subdirectory(py-bindings)
-add_subdirectory(tests)
-add_subdirectory(demos)
-add_subdirectory(scripts)
 add_subdirectory(doc)
 
 if(NOT MSVC)

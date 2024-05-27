@@ -6,8 +6,7 @@ install(DIRECTORY ompl/ DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ompl"
     PATTERN ".DS_Store" EXCLUDE
     PATTERN "sample_contrib" EXCLUDE
     REGEX "/src$" EXCLUDE
-    REGEX "/doc$" EXCLUDE
-    REGEX "/tests$" EXCLUDE)
+    REGEX "/doc$" EXCLUDE)
 
 target_include_directories(ompl
     PUBLIC
