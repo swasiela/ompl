@@ -40,6 +40,11 @@
 #include "ompl/base/State.h"
 #include "ompl/util/ClassForward.h"
 
+#include <utility>
+#include <cstdlib>
+#include <vector>
+#include <iostream>
+
 namespace ompl
 {
     namespace base
@@ -129,6 +134,27 @@ namespace ompl
             {
                 dist = clearance(state, validState, validStateAvailable);
                 return isValid(state);
+            }
+
+            //############################################################################################################
+            // Robust collision check
+
+            /// \brief Check the feasability of the control inputs according to some maximum allowed values
+            virtual bool isInputsValid(std::vector<double> &control_inputs, std::vector<double> &uncertainties) const
+            {
+                (void)control_inputs;
+                (void)uncertainties;
+                std::cout << "isInputValid NOT IMPLEMENTED !" << std::endl;
+                return false;
+            }
+
+            /// \brief Check the validity of the given state w.r.t. the environment
+            virtual bool isStateValid(const std::vector<double> &state, const std::vector<double> &uncertainty) const
+            {
+                (void)state;
+                (void)uncertainty;
+                std::cout << "isStateValid NOT IMPLEMENTED !" << std::endl;
+                return false;
             }
 
             /** \brief Report the distance to the nearest invalid state when starting from \e state. If the distance is

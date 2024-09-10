@@ -402,6 +402,58 @@ namespace ompl
                 throw ompl::Exception("simulateStatesAndTubes", "not implemented");
             }
 
+            /**
+             * Locally optimize a trajectory section for a given cost function.
+             *
+             * @param section_to_optimize The trajectory section to optimize.
+             * @param dt The time step.
+             * @param nb_iter The number of optimization attempt.
+             * @param cost_id The name of the cost function to used.
+             * @param opti_params The parameters to optimize in the trajectory (trajectory waypoints, gains, all, etc.)
+             * @param traj_opt The optimized trajectory section.
+             * @param cost The optimized section cost.
+             * @return If the simulation was successful
+            */
+            virtual bool localOpt(const std::vector<ompl::base::State*> &section_to_optimize, double dt, int nb_iter, std::string cost_id, std::string opti_params, 
+                                                std::vector<ompl::base::State*> &traj_opt, double &cost) const
+            {
+                (void)section_to_optimize;
+                (void)dt;
+                (void)nb_iter;
+                (void)cost_id;
+                (void)opti_params;
+                (void)traj_opt;
+                (void)cost;
+                throw ompl::Exception("localOpt", "not implemented");
+            }  
+
+            /**
+             * Locally optimize a trajectory section for a given cost function using a mpc formulation.
+             *
+             * @param section_to_optimize The trajectory section to optimize.
+             * @param dt The time step.
+             * @param nb_iter The number of optimization attempt.
+             * @param horizon The horizon length in the MPC.
+             * @param cost_id The name of the cost function to used.
+             * @param opti_params The parameters to optimize in the trajectory (trajectory waypoints, gains, all, etc.)
+             * @param traj_opt The optimized trajectory section.
+             * @param cost The optimized section cost.
+             * @return If the simulation was successful
+            */
+            virtual bool mpc(const std::vector<ompl::base::State*> &section_to_optimize, double dt, int nb_iter, int horizon, std::string cost_id, std::string opti_params, 
+                                                std::vector<ompl::base::State*> &traj_opt, double &cost) const
+            {
+                (void)section_to_optimize;
+                (void)dt;
+                (void)nb_iter;
+                (void)horizon;
+                (void)cost_id;
+                (void)opti_params;
+                (void)traj_opt;
+                (void)cost;
+                throw ompl::Exception("mpc", "not implemented");
+            }                                
+
             /** \brief Allocate an instance of the default uniform state sampler for this space */
             virtual StateSamplerPtr allocDefaultStateSampler() const = 0;
 

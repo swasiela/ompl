@@ -96,6 +96,18 @@ namespace ompl
                 return stateValidityChecker_->isValid(state);
             }
 
+            /** \brief Check if a given state is valid or not */
+            bool isInputsValid(std::vector<double> &control_inputs, std::vector<double> &uncertainties) const
+            {
+                return stateValidityChecker_->isInputsValid(control_inputs, uncertainties);
+            }
+
+            /** \brief Check if a given state is valid or not */
+            bool isStateValid(const std::vector<double> &state, const std::vector<double> &uncertainty) const
+            {
+                return stateValidityChecker_->isStateValid(state, uncertainty);
+            }
+
             /** \brief Return the instance of the used state space */
             const StateSpacePtr &getStateSpace() const
             {
@@ -414,12 +426,13 @@ namespace ompl
              * @param init_dynamic_states The initial robot state of each particle.
              * @param rand_up_params The uncertain model parameter values of each particle.
              * @param propagated_states The final robot state of each particle after propagation to be reused as futur initial state.
+             * @param double The padding value for the epsilon-RandUp.
              * @return The validity of the motion
             */
             bool checkMotionRandUp(const State *s1, const State *s2, const std::vector<std::vector<double>> &init_dynamic_states, 
-                                            const std::vector<std::vector<double>> &rand_up_params, std::vector<std::vector<double>> &propagated_states) const
+                                            const std::vector<std::vector<double>> &rand_up_params, std::vector<std::vector<double>> &propagated_states, double padding) const
             {
-                return motionValidator_->checkMotionRandUp(s1, s2 , init_dynamic_states, rand_up_params, propagated_states);
+                return motionValidator_->checkMotionRandUp(s1, s2 , init_dynamic_states, rand_up_params, propagated_states, padding);
             }
 
             //############################################################################################################

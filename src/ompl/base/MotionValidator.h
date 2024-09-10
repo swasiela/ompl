@@ -80,6 +80,26 @@ namespace ompl
 
             virtual ~MotionValidator() = default;
 
+            /** \brief Cast this instance to a desired type. */
+            template <class T>
+            T *as()
+            {
+                /** \brief Make sure the type we are casting to is indeed a state space */
+                BOOST_CONCEPT_ASSERT((boost::Convertible<T *, MotionValidator *>));
+
+                return static_cast<T *>(this);
+            }
+
+            /** \brief Cast this instance to a desired type. */
+            template <class T>
+            const T *as() const
+            {
+                /** \brief Make sure the type we are casting to is indeed a state space */
+                BOOST_CONCEPT_ASSERT((boost::Convertible<T *, MotionValidator *>));
+
+                return static_cast<const T *>(this);
+            }
+
             /** \brief Check if the path between two states (from \e s1 to \e s2) is valid. This function assumes \e s1
                is valid.
 
@@ -153,23 +173,26 @@ namespace ompl
             }
 
             /**
-             * Propagate each RandUp particles between s1 and s2 using the Lee controller.
+             * Propagate each RandUp particles between s1 and s2 using a c++ implementation based on the python implementation of https://github.com/StanfordASL/randUP_RRT.
+             * The collision checking is done in the same way as the one found in the file "plan_quadrotor.py", "is_safe" function line 86.
              *
              * @param s1 The first state of the desired motion
              * @param s2 The final state of the desired motion
              * @param init_dynamic_states The initial robot state of each particle.
              * @param rand_up_params The uncertain model parameter values of each particle.
              * @param propagated_states The final robot state of each particle after propagation to be reused as futur initial state.
+             * @param padding The padding value used for the epsilon-randup
              * @return The validity of the motion
             */
             virtual bool checkMotionRandUp(const State *s1, const State *s2, const std::vector<std::vector<double>> &init_dynamic_states, 
-                                        const std::vector<std::vector<double>> &rand_up_params, std::vector<std::vector<double>> &propagated_states) const
+                                        const std::vector<std::vector<double>> &rand_up_params, std::vector<std::vector<double>> &propagated_states, double padding) const
             {
                 (void)s1;
                 (void)s2;
                 (void)init_dynamic_states;
                 (void)rand_up_params;
                 (void)propagated_states;
+                (void)padding;
                 throw ompl::Exception("checkMotionRandUp", "not implemented");
             }
 
@@ -216,6 +239,30 @@ namespace ompl
             {
                 (void)states;
                 throw ompl::Exception("reCheckMotionODE", "not implemented");
+            }
+
+            //############################################################################################################
+            // Getter and setter to the time step used for discrete motion checking
+
+            /**
+             * Get the current time step used by the collision checker to interpolate and check the motion
+             *
+             * @return The current interpolation and checking time step
+            */
+            virtual double getDt() const
+            {
+                throw ompl::Exception("getDt", "not implemented");
+            }
+            
+            /**
+             * Set the new time step for interpolation and collision checking
+             *
+             * @param new_dt The new interpolation and checking time step
+            */
+            virtual void setDt(const double new_dt)
+            {
+                (void)new_dt;
+                throw ompl::Exception("setDt", "not implemented");
             }
 
             /** \brief Get the number of segments that tested as valid */
